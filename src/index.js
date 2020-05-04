@@ -13,7 +13,9 @@ const routing = (
       {/* <ul> */}
       {/* <li> */}
       <Link to='/' style={{ color: 'black' }}>
-        Home
+        <button style={{ marginLeft: '5px', marginTop: '5px' }} type='button'>
+          Home
+        </button>
       </Link>
       {/* </li> */}
       {/* <li>

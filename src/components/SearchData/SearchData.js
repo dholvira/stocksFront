@@ -4,7 +4,7 @@ import './SearchData.css';
 import axios from 'axios';
 import ReactDatetime from 'react-datetime';
 import moment from 'moment';
-import { SpinnerRound, SpinnerRomb } from 'spinners-react';
+import { SpinnerRomb } from 'spinners-react';
 
 const $ = require('jquery');
 require('jszip');

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import SearchBar from './components/SearchBar/SearchBar';
 import StockList from './components/StockList/StockList';
-import { SpinnerRound, SpinnerRomb } from 'spinners-react';
+import { SpinnerRomb } from 'spinners-react';
 
 import './App.css';
 
@@ -84,8 +84,11 @@ class App extends Component {
           onChange={this.handleChange}
           onClick={this.handleClick}
         />
-        <SpinnerRomb enabled={this.state.loading} size='90' color='white' />
-        <StockList stockItems={stocks} />
+        {this.state.loading ? (
+          <SpinnerRomb enabled={this.state.loading} size='90' color='white' />
+        ) : (
+          <StockList stockItems={stocks} />
+        )}
       </div>
     );
   }
