@@ -4,6 +4,7 @@ import './SearchData.css';
 import axios from 'axios';
 import ReactDatetime from 'react-datetime';
 import moment from 'moment';
+import { SpinnerRound, SpinnerRomb } from 'spinners-react';
 
 const $ = require('jquery');
 require('jszip');
@@ -22,13 +23,7 @@ class SearchData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeNav: 1,
-      breaksCount: '',
-      toggle: false,
-      activePage: 1,
-      length: 0,
-      totalSections: 0,
-      activeSection: 0,
+      loading: false,
       date: '',
       data: [],
       datas: [],
@@ -58,6 +53,7 @@ class SearchData extends React.Component {
   // };
 
   handleDaily = (data) => {
+    this.setState({ loading: true });
     let symbol = data;
     let date = this.state.date;
     // let timestamp = '1560475800';
@@ -65,7 +61,7 @@ class SearchData extends React.Component {
     // let timestampLimit = '1560476100';
     // let timestamp = null;
     // &timestamp=${timestamp}&timestampLimit=${timestampLimit}
-    let limit = 5000;
+    let limit = 1000;
     const key = 'toPW3zJRmvq_rh1q1JKO8F0eeGkQ_BJ775UhmH';
     const url = `https://api.polygon.io/v2/ticks/stocks/trades/${symbol}/${date}?limit=${limit}&apiKey=${key}&reverse=1`;
     axios.get(url);
@@ -77,7 +73,7 @@ class SearchData extends React.Component {
       .then((response) => {
         console.log(response, 'response');
         this.setState({ total_records: response.data.results.results_count });
-        // this.setState({ rows: response.data.map });
+        this.setState({ loading: false });
 
         this.setState({ data: response.data.results });
         const tbobj = $('#example').DataTable({
@@ -208,7 +204,12 @@ class SearchData extends React.Component {
 
           <br />
           <button
-            style={{ width: '20%', borderRadius: '8px', fontSize: '16px' }}
+            style={{
+              width: '20%',
+              borderRadius: '8px',
+              fontSize: '16px',
+              outline: 'none',
+            }}
             onClick={() =>
               this.handleDaily(this.props.location.state.ticker.ticker)
             }
@@ -218,6 +219,10 @@ class SearchData extends React.Component {
           <br />
 
           <br />
+          <div style={{ marginLeft: '50%' }}>
+            {' '}
+            <SpinnerRomb enabled={this.state.loading} />
+          </div>
           <br />
 
           <table
@@ -237,6 +242,7 @@ class SearchData extends React.Component {
                 <th>Participant Timestamp</th>
               </tr>
             </thead>
+
             <tbody>{eodList.map((item, index) => tblrow(item, index))}</tbody>
           </table>
         </li>

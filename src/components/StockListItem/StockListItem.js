@@ -15,7 +15,7 @@ const StockListItem = (stock, props) => {
 
     const key = 'S5KUOUOILZEAPDNE';
     const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=1min&outputsize=full&apikey=${key}&datatype=csv`;
-    // window.open(url, '_blank');
+    window.open(url, '_blank');
     axios
       .get(url)
       .then((res) => {
@@ -91,7 +91,7 @@ const StockListItem = (stock, props) => {
           },
         }}
       >
-        To Stocks Data
+        <button type='button'>Stocks Data</button>
       </Link>
       <br />
       <Link
@@ -102,7 +102,7 @@ const StockListItem = (stock, props) => {
           },
         }}
       >
-        Details
+        <button type='button'>Details</button>
       </Link>
     </li>
   );

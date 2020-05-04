@@ -4,6 +4,8 @@ import axios from 'axios';
 
 import SearchBar from './components/SearchBar/SearchBar';
 import StockList from './components/StockList/StockList';
+import { SpinnerRound, SpinnerRomb } from 'spinners-react';
+
 import './App.css';
 
 class App extends Component {
@@ -14,6 +16,7 @@ class App extends Component {
       stocks: [],
       term: null,
       value: '',
+      loading: false,
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -30,6 +33,7 @@ class App extends Component {
     if (e) e.preventDefault();
     this.setState({
       value: '',
+      loading: true,
       term: this.state.value,
     });
 
@@ -40,7 +44,8 @@ class App extends Component {
     axios
       .get(url)
       .then((res) => {
-        console.log(res, 'search data');
+        // console.log(res, 'search data');
+        this.setState({ loading: false });
         let stocks = _.flattenDeep(
           Array.from(res.data.tickers).map((stock) => [
             {
@@ -79,6 +84,7 @@ class App extends Component {
           onChange={this.handleChange}
           onClick={this.handleClick}
         />
+        <SpinnerRomb enabled={this.state.loading} size='90' color='white' />
         <StockList stockItems={stocks} />
       </div>
     );
