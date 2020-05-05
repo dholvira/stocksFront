@@ -5,6 +5,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { SpinnerRomb } from 'spinners-react';
 import Datetime from 'react-datetime';
+// import DatePicker from 'react-datepicker';
 
 const $ = require('jquery');
 require('jszip');
@@ -17,7 +18,6 @@ require('datatables.net-buttons/js/buttons.html5.js');
 require('datatables.net-buttons/js/buttons.print.js');
 require('datatables.net-responsive-dt');
 require('datatables.net-select-dt');
-// import DatePicker from 'react-datepicker';
 
 class SearchData extends React.Component {
   constructor(props) {
@@ -29,7 +29,7 @@ class SearchData extends React.Component {
       activePage: 1,
       length: 0,
       selectedDate: new Date(),
-      activeSection: 0,
+      range: false,
       loading: false,
       searchdate: '',
       data: [],
@@ -40,6 +40,7 @@ class SearchData extends React.Component {
     this.handleStartDate = this.handleStartDate.bind(this);
     this.handleEndDate = this.handleEndDate.bind(this);
     this.handleDaily = this.handleDaily.bind(this);
+    this.handleDate = this.handleDate.bind(this);
   }
 
   handleClick = (data) => {
@@ -74,8 +75,13 @@ class SearchData extends React.Component {
     // &timestamp=${timestamp}&timestampLimit=${timestampLimit}
     let limit = 1000;
     const key = 'toPW3zJRmvq_rh1q1JKO8F0eeGkQ_BJ775UhmH';
-    const url = `https://api.polygon.io/v2/ticks/stocks/trades/${symbol}/${date}?limit=${limit}&apiKey=${key}&timestamp=${timestamp}&timestampLimit=${timestampLimit}&reverse=1`;
-    axios.get(url);
+    const url1 = `https://api.polygon.io/v2/ticks/stocks/trades/${symbol}/${date}?limit=${limit}&apiKey=${key}&timestamp=${timestamp}&timestampLimit=${timestampLimit}&reverse=0`;
+    const url2 = `https://api.polygon.io/v2/ticks/stocks/trades/${symbol}/${date}?limit=${limit}&apiKey=${key}&reverse=0`;
+    if (this.state.range) {
+      var url = url1;
+    } else {
+      url = url2;
+    }
     axios
       .get(url)
       // .then((response) => {
@@ -149,7 +155,14 @@ class SearchData extends React.Component {
     this.setState({ timestampLimit: enddate.unix() * 1000000000 });
     // console.log(this.state.timestampLimit, 'enddate set');
   }
-
+  handleDate(date) {
+    console.log(date, 'now date');
+    this.setState({ searchdate: date.format('YYYY-MM-DD') });
+    // console.log(this.state.searchdate, 'only date');
+  }
+  handleRange() {
+    this.setState({ range: !this.state.range });
+  }
   // componentDidMount() {
   //   this.setState({ datas: this.props.location.state.ticker });
   // }
@@ -212,38 +225,65 @@ class SearchData extends React.Component {
           </div>
           <br />
 
-          {/* <ReactDatetime
-            inputProps={{
-              placeholder: 'Date Picker Here',
-            }}
-            onChange={this.handleDate}
-            timeFormat={false}
-          /> */}
           {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
-          <div
+          <button
             style={{
-              display: 'flex ',
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              margin: '10px',
+              width: '10%',
+              fontSize: '12px',
+              borderRadius: '9px',
             }}
+            onClick={() => this.handleRange()}
           >
-            <div>
-              <span>Start Date-Time: </span>
+            Switch Search Type
+          </button>
+          {this.state.range ? (
+            <div
+              style={{
+                display: 'flex ',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                margin: '10px',
+              }}
+            >
+              <div>
+                <span>Start Date-Time: </span>
+
+                <Datetime
+                  // value={this.state.selectedDate}
+                  onChange={this.handleStartDate}
+                />
+              </div>
+              <div style={{ marginLeft: '20px' }}>
+                <span>End Date-Time: </span>
+                <Datetime
+                  defaultValue={this.state.selectedDate}
+                  onChange={this.handleEndDate}
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: 'flex ',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                margin: '10px',
+              }}
+            >
+              <span>Select Date: </span>
 
               <Datetime
-                // value={this.state.selectedDate}
-                onChange={this.handleStartDate}
+                dateFormat='YYYY-MM-DD'
+                timeFormat={false}
+                defaultValue={this.state.selectedDate}
+                inputProps={{
+                  placeholder: 'Date Picker Here',
+                }}
+                onChange={this.handleDate}
+                // timeFormat={false}
               />
             </div>
-            <div style={{ marginLeft: '20px' }}>
-              <span>End Date-Time: </span>
-              <Datetime
-                // defaultValue={this.state.selectedDate}
-                onChange={this.handleEndDate}
-              />
-            </div>
-          </div>
+          )}
 
           {/* </MuiPickersUtilsProvider> */}
 
