@@ -2,9 +2,9 @@ import React from 'react';
 
 import './SearchData.css';
 import axios from 'axios';
-import ReactDatetime from 'react-datetime';
 import moment from 'moment';
 import { SpinnerRomb } from 'spinners-react';
+import Datetime from 'react-datetime';
 
 const $ = require('jquery');
 require('jszip');
@@ -23,14 +23,22 @@ class SearchData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      timestamp: 0,
+      timestampLimit: '',
+      toggle: false,
+      activePage: 1,
+      length: 0,
+      selectedDate: new Date(),
+      activeSection: 0,
       loading: false,
-      date: '',
+      searchdate: '',
       data: [],
       datas: [],
       table: {},
       total_records: '',
     };
-    this.handleDate = this.handleDate.bind(this);
+    this.handleStartDate = this.handleStartDate.bind(this);
+    this.handleEndDate = this.handleEndDate.bind(this);
     this.handleDaily = this.handleDaily.bind(this);
   }
 
@@ -53,17 +61,20 @@ class SearchData extends React.Component {
   // };
 
   handleDaily = (data) => {
-    this.setState({ loading: true });
+    // this.state.table.destroy();
+
+    this.setState({ table: {}, loading: true });
     let symbol = data;
-    let date = this.state.date;
-    // let timestamp = '1560475800';
-    // let timestampLimit = '';
-    // let timestampLimit = '1560476100';
-    // let timestamp = null;
+    let date = this.state.searchdate;
+    // let date = '2020-05-04';
+    let timestamp = this.state.timestamp;
+    // let timestampLimit = '1588633200000000000';
+    let timestampLimit = this.state.timestampLimit;
+    // let timestamp = '1588597200000000000';
     // &timestamp=${timestamp}&timestampLimit=${timestampLimit}
     let limit = 1000;
     const key = 'toPW3zJRmvq_rh1q1JKO8F0eeGkQ_BJ775UhmH';
-    const url = `https://api.polygon.io/v2/ticks/stocks/trades/${symbol}/${date}?limit=${limit}&apiKey=${key}&reverse=1`;
+    const url = `https://api.polygon.io/v2/ticks/stocks/trades/${symbol}/${date}?limit=${limit}&apiKey=${key}&timestamp=${timestamp}&timestampLimit=${timestampLimit}&reverse=1`;
     axios.get(url);
     axios
       .get(url)
@@ -125,11 +136,20 @@ class SearchData extends React.Component {
 
         this.setState({ table: tbobj });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        this.setState({ loading: false });
+        console.log(error);
+      });
   };
-  handleDate(date) {
-    this.setState({ date: moment(date).format('YYYY-MM-DD') });
+  handleStartDate(startdate) {
+    this.setState({ searchdate: startdate.format('YYYY-MM-DD') });
+    this.setState({ timestamp: startdate.unix() * 1000000000 });
   }
+  handleEndDate(enddate) {
+    this.setState({ timestampLimit: enddate.unix() * 1000000000 });
+    // console.log(this.state.timestampLimit, 'enddate set');
+  }
+
   // componentDidMount() {
   //   this.setState({ datas: this.props.location.state.ticker });
   // }
@@ -140,9 +160,9 @@ class SearchData extends React.Component {
     const tblrow = (item, index) => {
       return (
         <tr key={index} style={{ alignContent: 'center' }}>
-          <td>{item.i}</td>
-          <td>{item.p}</td>
           <td>{item.q}</td>
+          <td>{item.p}</td>
+          <td>{item.i}</td>
           <td>{item.s}</td>
           {/* <td>
             {moment.unix(item.t).format('dddd MMMM Do YYYY, h:mm:ss a')}
@@ -192,23 +212,47 @@ class SearchData extends React.Component {
           </div>
           <br />
 
-          <ReactDatetime
+          {/* <ReactDatetime
             inputProps={{
               placeholder: 'Date Picker Here',
             }}
             onChange={this.handleDate}
             timeFormat={false}
-          />
+          /> */}
+          {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
+          <div
+            style={{
+              display: 'flex ',
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              margin: '10px',
+            }}
+          >
+            <div>
+              <span>Start Date-Time: </span>
+
+              <Datetime
+                // value={this.state.selectedDate}
+                onChange={this.handleStartDate}
+              />
+            </div>
+            <div style={{ marginLeft: '20px' }}>
+              <span>End Date-Time: </span>
+              <Datetime
+                // defaultValue={this.state.selectedDate}
+                onChange={this.handleEndDate}
+              />
+            </div>
+          </div>
+
+          {/* </MuiPickersUtilsProvider> */}
 
           <br />
 
           <br />
           <button
             style={{
-              width: '20%',
-              borderRadius: '8px',
-              fontSize: '16px',
-              outline: 'none',
+              width: '10%',
             }}
             onClick={() =>
               this.handleDaily(this.props.location.state.ticker.ticker)
@@ -233,9 +277,11 @@ class SearchData extends React.Component {
           >
             <thead>
               <tr role='row'>
-                <th>Id</th>
-                <th>Price</th>
                 <th>Sequence Number</th>
+
+                <th>Price</th>
+                <th>Id</th>
+
                 <th>Size</th>
                 <th>SIP timestamp</th>
                 <th>exchange</th>

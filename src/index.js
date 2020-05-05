@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 import SearchData from './components/SearchData/SearchData';
 import Details from './components/Details/Details';
