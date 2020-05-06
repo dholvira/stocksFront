@@ -2,10 +2,12 @@ import React from 'react';
 
 import './SearchData.css';
 import axios from 'axios';
-import moment from 'moment';
+// import moment from 'moment';
 import { SpinnerRomb } from 'spinners-react';
 import Datetime from 'react-datetime';
 // import DatePicker from 'react-datepicker';
+
+import moment from 'moment-timezone';
 
 const $ = require('jquery');
 require('jszip');
@@ -61,9 +63,9 @@ class SearchData extends React.Component {
   //   window.open(url, '_blank');
   // };
 
-  handleDaily = (data) => {
+  handleDaily = async (data) => {
     // this.state.table.destroy();
-
+    await $('#example').DataTable().destroy();
     this.setState({ table: {}, loading: true });
     let symbol = data;
     let date = this.state.searchdate;
@@ -148,7 +150,10 @@ class SearchData extends React.Component {
       });
   };
   handleStartDate(startdate) {
-    this.setState({ searchdate: startdate.format('YYYY-MM-DD') });
+    this.setState({
+      searchdate: startdate.tz('America/New_York').format('YYYY-MM-DD'),
+    });
+
     this.setState({ timestamp: startdate.unix() * 1000000000 });
   }
   handleEndDate(enddate) {
@@ -256,7 +261,7 @@ class SearchData extends React.Component {
               <div style={{ marginLeft: '20px' }}>
                 <span>End Date-Time: </span>
                 <Datetime
-                  defaultValue={this.state.selectedDate}
+                  // defaultValue={this.state.selectedDate}
                   onChange={this.handleEndDate}
                 />
               </div>

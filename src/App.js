@@ -44,7 +44,7 @@ class App extends Component {
     axios
       .get(url)
       .then((res) => {
-        // console.log(res, 'search data');
+        console.log(res, 'search data');
         this.setState({ loading: false });
         let stocks = _.flattenDeep(
           Array.from(res.data.tickers).map((stock) => [
