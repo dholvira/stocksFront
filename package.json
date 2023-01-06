@@ -23,7 +23,7 @@
     "react-datetime": "^2.16.3",
     "react-dom": "^16.2.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "1.1.1",
+    "react-scripts": "5.0.1",
     "spinners-react": "^1.0.3"
   },
   "scripts": {
